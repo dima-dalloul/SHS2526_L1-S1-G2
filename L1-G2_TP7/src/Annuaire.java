@@ -23,6 +23,7 @@ public class Annuaire {
         tableauNumeros[2] = fin;
 
         // Appel de l'action d'affichage
+        ordonnerAnnuaireAlphabetiquement(tableauNoms, tableauNumeros);
         afficher(tableauNoms, tableauNumeros);
 
         /* Question c :
@@ -30,10 +31,10 @@ public class Annuaire {
          */
         Scanner s = new Scanner(System.in);
         System.out.println("Bienvenue à ton annuaire téléphonique Java");
-        char entreeUtilisateur = ' ';
+        char entreeUtilisateur;
 
         do {    // Dédicace Mouhamadou
-            System.out.println("(a)jouter (r)echerche (l)ister (q)uitter :");
+            System.out.println("(a)jouter (r)echerche (l)ister (s)upprimer (q)uitter :");
             entreeUtilisateur = s.nextLine().charAt(0);
 
             switch (entreeUtilisateur) {
@@ -58,6 +59,15 @@ public class Annuaire {
                     System.out.println("Quel est le numéro à ajouter ? ");
                     String numeroAAjouter = s.nextLine();
                     ajouter(tableauNoms, tableauNumeros, nomAAjouter, numeroAAjouter);
+                    ordonnerAnnuaireAlphabetiquement(tableauNoms, tableauNumeros);
+                    break;
+
+                case 's':
+                    // Supprimer une entrée
+                    System.out.println("Quel est le nom à supprimer ? ");
+                    String nomASupprimer = s.nextLine();
+                    supprimer(tableauNoms, tableauNumeros, nomASupprimer);
+                    ordonnerAnnuaireAlphabetiquement(tableauNoms, tableauNumeros);
                     break;
 
                 default:
@@ -146,5 +156,69 @@ public class Annuaire {
                 }
             }
         }
+    }
+
+    /** Bonus 1 : Supprimer une entrée de l'annuaire */
+    private static void supprimer(String[] tabNoms, String[] tabNumeros, String nomASupprimer) {
+        String nomDansAnnuaire = rechercher(tabNoms, tabNumeros, nomASupprimer.toLowerCase());
+
+        if(!nomDansAnnuaire.isEmpty()){
+            // Le nom est bien dans l'annuaire donc on le supprime
+            for(int i = 0; i < tabNoms.length && !tabNoms[i].equals(fin); i++){
+                if(tabNoms[i].equals(nomASupprimer)){
+                    // On a trouvé le nom donc on décale tous les éléments à gauche d'une case
+                    for(int j = i; j < tabNoms.length - 1; j++){
+                        tabNoms[j] = tabNoms[j + 1];
+                        tabNumeros[j] = tabNumeros[j + 1];
+
+                        // Si on attend fin alors on peut arrêter le travail de décalage
+                        if(tabNoms[j].equals(fin)){
+                            break;
+                        }
+                    }
+                    System.out.println(nomASupprimer + " a bien été supprimé de l'annuaire.");
+                    // on casse la boucle car on a supprimé l'élément et on a tout réarrangé
+                    break;
+                }
+            }
+        } else {
+            // Le nom n'existe pas dans l'anuaire
+            System.out.println("Le nom " + nomASupprimer + " n'existe pas dans l'anuaire.");
+        }
+    }
+
+    /** Bonus 2 : Ordonner l'annuaire par ordre alphabétique */
+    private static void ordonnerAnnuaireAlphabetiquement(String[] tabNoms, String[] tabNumeros) {
+        // On va utiliser l'algorithme Bubble Sort
+        boolean echange;
+        int taille = 0;
+
+        // D'abord on trouve la taille des éléments stockés
+        for(int i = 0; i < tabNoms.length; i++){
+            if(tabNoms[i].equals(fin)){
+                taille = i;
+                break;
+            }
+        }
+
+        // Maintenant on peut ordonner les tableaux
+        do{
+            echange = false;
+            for(int i = 0; i < taille - 1; i++){
+                if(tabNoms[i].compareToIgnoreCase(tabNoms[i + 1]) > 0){
+                    // On doit échanger les éléments des 2 tableaux
+                    String tempNom = tabNoms[i];
+                    String tempNumero = tabNumeros[i];
+
+                    tabNoms[i] = tabNoms[i + 1];
+                    tabNumeros[i] = tabNumeros[i + 1];
+
+                    tabNoms[i + 1] = tempNom;
+                    tabNumeros[i + 1] = tempNumero;
+
+                    echange = true;
+                }
+            }
+        } while(echange);
     }
 }
